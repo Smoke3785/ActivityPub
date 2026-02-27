@@ -20,6 +20,12 @@ function sleep(n: number) {
 function getJwksURL(host: string, ctx: HonoContext) {
     const GHOST_JWKS_ENDPOINT = '/ghost/.well-known/jwks.json';
 
+    // Allow overriding the JWKS base URL for environments where the public
+    // domain isn't reachable from within the network (e.g. Railway internal networking)
+    if (process.env.GHOST_URL) {
+        return new URL(GHOST_JWKS_ENDPOINT, process.env.GHOST_URL);
+    }
+
     let protocol = 'https';
     // We allow insecure requests when not in production for things like testing
     if (
